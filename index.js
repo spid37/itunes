@@ -75,12 +75,13 @@ iTunes.prototype.getAlbumsByArtistId = function(artistId,minTracks){
    };
    return this.getRequest(this.lookupUrl,query).then(function(data){
       // console.log(data.results);
-      var albums = [];
-      _.find(data.results, function(result){
-         if(result.trackCount > minTracks){
-            this.push(result);
+      var albums = _.filter(data.results, function(result){
+         // make sure type is collection(album)
+         if (result.wrapperType && result.wrapperType != 'collection'){
+            return false;
          }
-      },albums);
+         return (result.trackCount && result.trackCount > minTracks);
+      });
       var output = {};
       var artist = _.findWhere(data.results,{"wrapperType":"artist"});
       if(artist){
@@ -94,6 +95,7 @@ iTunes.prototype.getAlbumsByArtistId = function(artistId,minTracks){
 
 iTunes.prototype.getLargestImage = function(data){
 
+   // need to add?
    // check common image sizes HEAD url to see if valid.
 
    //var str = "http://is5.mzstatic.com/image/pf/us/r30/Music/3f/e2/57/mzi.jfdzbvtg.100x100-75.jpg";
@@ -114,10 +116,9 @@ iTunes.prototype.getTrackById = function(trackId){
    };
    return this.getRequest(this.lookupUrl,query).then(function(data){
       // console.log(data.results);
+      // got track now confirm result exists in results
       var trackConfirm = {"wrapperType": "track", "trackId": trackId};
       var output = _.findWhere(data.results,trackConfirm);
-      console.log(output);
-      console.log(trackConfirm);
       return output;
    });
 }
@@ -132,37 +133,41 @@ iTunes.prototype.getAlbumById = function(collectionId){
       "id": collectionId,
       "entity": "album,song",
    };
+   // query to extract only the collection from the results
    var albumConfirm = {
       "wrapperType": "collection",
       "collectionId": collectionId
    };
+   // query to extract the tracks from the results
    var getTracks = {
       "wrapperType": "track",
       "collectionId": collectionId
    };
    return this.getRequest(this.lookupUrl,query).then(function(data){
+      // extract album from result
       var album = _.findWhere(data.results,albumConfirm);
       if(!album){
          return null;
       }
+      // extract tracks from results
       var tracks = _.filter(data.results,getTracks);
       return { "album": album, "tracks": tracks, "trackCount": tracks.length };
    });
 }
 
 iTunes.prototype.search = function(search){
+   // search for song and album only
    var self = this;
    var query = {
       "term": search,
-//      "entity": "musicArtist,song,album",
+      //    "entity": "musicArtist,song,album",
       "entity": "song,album",
       "sort": "recent"
-      //      "attribute": "artistTerm,albumTerm,songTerm",
+      //    "attribute": "artistTerm,albumTerm,songTerm",
    };
    return this.getRequest(this.searchUrl,query).then(function(data){
       // console.log(data.results);
       data.results = self.removeCleanDuplicates(data.results);
-
       return data;
    });
 }
