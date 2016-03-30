@@ -1,4 +1,4 @@
-var iTunes = require(__dirname + "/index.js");
+var iTunes = require(__dirname + "/../index.js");
 
 var it = new iTunes();
 
