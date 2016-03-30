@@ -1,0 +1,24 @@
+{
+  "name": "itunes",
+  "version": "1.0.0",
+  "description": "Library to access iTunes Search API (music only)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spid37/itunes.git"
+  },
+  "author": "Nicholas Terrell",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/spid37/itunes/issues"
+  },
+  "homepage": "https://github.com/spid37/itunes#readme",
+  "dependencies": {
+    "bluebird": "^3.3.4",
+    "lodash": "^4.6.1",
+    "superagent": "^1.8.3"
+  }
+}
